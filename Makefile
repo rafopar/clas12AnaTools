@@ -28,7 +28,7 @@ RecParticle.o:	src/RecParticle.cc include/RecParticle.h
 
 ## Target: clean
 clean:		 
-		rm -f *.o lib*.so*
+		rm -f *.o lib/*.so*
 
 
 # Enable dependency checking
