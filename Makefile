@@ -9,7 +9,7 @@
 
 CC              = g++ -std=c++11
 CC_OBJ_FLAGS    = -c -fPIC
-CC_Shared_FLAGS = -shared -Wl,-soname,clas12AnaTools.so
+CC_Shared_FLAGS = -shared -Wl,-soname,libclas12AnaTools.so
 HIPO_FLAGS      = -I/Work/apps/hipo/hipo4
 ROOT_CFLAGS     = $(shell /usr/local/apps/root6.22.02Install/bin/root-config --cflags)
 ROOT_LIBS       = $(shell /usr/local/apps/root6.22.02Install/bin/root-config --libs)
