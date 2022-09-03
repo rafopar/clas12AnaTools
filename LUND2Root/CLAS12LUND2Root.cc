@@ -23,7 +23,6 @@ using namespace std;
  */
 
 void HelpPrint();
-std::string exec(const char* cmd); // This function code copied from https://stackoverflow.com/a/478960/8216229
 
 /*
  * 
@@ -229,21 +228,4 @@ void HelpPrint() {
     cout << "-i: Input File Name: Accepts wildcards" << endl;
     cout << "-o: Output File Name" << endl;
     cout << "-h: print this command" << endl;
-
-
-}
-
-std::string exec(const char* cmd) {
-    std::array<char, 128> buffer;
-    std::string result;
-    std::unique_ptr<FILE, decltype(&pclose) > pipe(popen(cmd, "r"), pclose);
-    if (!pipe) {
-        throw std::runtime_error("popen() failed!");
-    }
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-        result += buffer.data();
-    }
-    return result;
-
-    // Code copied from https://stackoverflow.com/a/478960/8216229
 }
