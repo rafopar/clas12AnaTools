@@ -32,6 +32,7 @@ int main(int argc, char** argv) {
     if (argc < 2) {
         cout << "You didn't provide any argument" << endl;
         HelpPrint();
+        exit(1);
     }
 
 
@@ -153,6 +154,7 @@ int main(int argc, char** argv) {
                 }
 
                 if (result.size() == nHeader) {
+                    
                     nPart = atoi(result.at(0).c_str());
                     A_Targ = atoi(result.at(1).c_str());
                     Z_Targ = atoi(result.at(2).c_str());
@@ -200,18 +202,6 @@ int main(int argc, char** argv) {
         }
 
         cur_file.close();
-    }
-
-    for (int i = 0; i < 100; i++) {
-        nPart = 1 + i % 5;
-
-        for (int ipart = 0; ipart < nPart; ipart++) {
-            px[ipart] = rand->Uniform(-10., 10.);
-            py[ipart] = rand->Uniform(-10., 10.);
-            pz[ipart] = rand->Uniform(-10., 10.);
-        }
-
-        tr1->Fill();
     }
 
     tr1->Write();
