@@ -119,6 +119,15 @@ int main(int argc, char** argv) {
     TRandom *rand = new TRandom();
 
     tr1->Branch("nPart", &nPart, "nPart/I");
+    tr1->Branch("A_Targ", &A_Targ, "A_Targ/I");
+    tr1->Branch("Z_Targ", &Z_Targ, "Z_Targ/I");
+    tr1->Branch("pol_targ", &pol_targ, "pol_targ/D");
+    tr1->Branch("pol_beam", &pol_beam, "pol_beam/D");
+    tr1->Branch("beamType", &beamType, "beamType/I");
+    tr1->Branch("Eb", &Eb, "Eb/D");
+    tr1->Branch("InterNuclID", &InterNuclID, "InterNuclID/I");
+    tr1->Branch("ProcessID", &ProcessID, "ProcessID/I");
+    tr1->Branch("EvWeight", &EvWeight, "EvWeight/D");
     tr1->Branch("index", &index, "index[nPart]/I");
     tr1->Branch("t_live", &t_live, "t_live[nPart]/D");
     tr1->Branch("type", &type, "type[nPart]/I");
