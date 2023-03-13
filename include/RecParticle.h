@@ -17,7 +17,7 @@
 class RecParticle {
 public:
     RecParticle( hipo::bank &, hipo::bank &, hipo::bank &, int, int, int, int, int );
-    RecParticle(const RecParticle& orig);
+    //RecParticle(const RecParticle& orig);
     virtual ~RecParticle();
 
     int pid() const {return fpid;};

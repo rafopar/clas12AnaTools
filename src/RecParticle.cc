@@ -138,8 +138,8 @@ RecParticle::RecParticle(hipo::bank &bRecPart, hipo::bank &bRecCalo, hipo::bank 
 
 }
 
-RecParticle::RecParticle(const RecParticle& orig) {
-}
+//RecParticle::RecParticle(const RecParticle& orig) {
+//}
 
 RecParticle::~RecParticle() {
 }
