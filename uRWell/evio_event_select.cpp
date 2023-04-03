@@ -24,16 +24,19 @@ char *ev_numbers_in;
 
 int main(int argc, char *argv[])
 {
+
   
-  int run, event_num, sector_num, result;
+  int run, fnum, event_num, sector_num, result;
   double p, theta, phi;
   int status;
   char buf[1200];
   int itmp, ievent, last_event_num;
 
-  char *file_data_in;
-  char *file_data_out;
-
+  char *file_data_in = new char[250];
+  char *file_data_out = new char[250];
+  ev_numbers_in = new char[250];
+  file_numbers_in = new char[250];
+  
   GET_PUT_INIT;
 
   if( argc < 2 ){
@@ -44,12 +47,16 @@ int main(int argc, char *argv[])
 
 
   run = atoi(argv[1]);
-  sprintf(file_data_in, "/work/clas12/rafopar/uRWELL/Readout/APV25/urwell_00%d.evio.00000", run);
-  sprintf(file_data_out, "Data/SkimCoincidence_%d.evio", run);
-  sprintf(ev_numbers_in, "Data/Skim_EvNumbers_%d.dat", run);
+  fnum = atoi(argv[2]);
+  cout<<"KUKU____Run = "<<run<<endl;
+  sprintf(file_data_in, "/work/clas12/rafopar/uRWELL/Readout/APV25/urwell_00%d.evio.0000%d", run, fnum);
+  cout<<"Before f open "<<endl;
+  sprintf(file_data_out, "Data/SkimCoincidence_%d_%d.evio", run, fnum);
+  //sprintf(ev_numbers_in, "Data/Skim_CrossEvNumbers_%d_%d.dat", run, fnum);
+  sprintf(ev_numbers_in, "Data/Skim_EvNumbers_%d_%d.dat", run, fnum);
   FILE *f = fopen(ev_numbers_in, "rt");
 
-
+  
   // evio input file
   //sprintf(buf, "%s.evio.%05d", file_data_in, evFileNumber++);
   if((status = evOpen(file_data_in, "r", &evInputHandle)) != 0)
@@ -105,10 +112,13 @@ int main(int argc, char *argv[])
       evEventNumber++;
       
       //int fragtag = 37, fragnum = -1, banktag = 0xe10a;
-      int fragtag = 40, fragnum = -1, banktag = 0xe10a;
+      //int fragtag = 40, fragnum = -1, banktag = 0xe10a;
+      int fragtag = 85, fragnum = -1, banktag = 0xe10a;
       int ind_data, ind = 0;
       int nbytes;
       
+cout<<"KUKU"<<endl;
+
       for(int banknum=0; banknum<40; banknum++)
       {
         ind = evLinkBank(evBuffer, fragtag, fragnum, banktag, banknum, &nbytes, &ind_data);

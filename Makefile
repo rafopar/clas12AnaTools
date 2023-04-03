@@ -10,14 +10,14 @@
 CC              = g++ -std=c++11
 CC_OBJ_FLAGS    = -c -fPIC
 CC_Shared_FLAGS = -shared -Wl,-soname,libclas12AnaTools.so
-HIPO_FLAGS      = -I/Work/apps/hipo/hipo4
-ROOT_CFLAGS     = $(shell /usr/local/apps/root6.22.02Install/bin/root-config --cflags)
-ROOT_LIBS       = $(shell /usr/local/apps/root6.22.02Install/bin/root-config --libs)
+HIPO_FLAGS      = -I/home/rafopar/work/git/hipo/hipo4
+ROOT_CFLAGS     = $(shell /local/work/builds/root_6_26_02_build/bin/root-config --cflags)
+ROOT_LIBS       = $(shell /local/work/builds/root_6_26_02_build/bin/root-config --libs)
 clas12AnaTools  = libclas12AnaTools
 
 ## Target: all
 all:		RecParticle.o
-		rm -f ${clas12AnaTools}.so*
+		mkdir -p lib; rm -f lib/*.so
 		$(CC) $(CC_Shared_FLAGS) -o lib/${clas12AnaTools}.so.1.0.1 $?
 		cd lib;\
 		ln -sf ${clas12AnaTools}.so.1.0.1 ${clas12AnaTools}.so.1; ln -sf ${clas12AnaTools}.so.1.0.1 ${clas12AnaTools}.so

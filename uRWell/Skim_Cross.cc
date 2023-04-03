@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
     const double sigm_threshold = 5.; // Represents the threshold of the ADC in units of the sigma.
     const int crateID_test3 = 40; // the fADC is on ROC 40
     const int slot_fADC = 3; // and the slot is 3
-    const int n_ts = 6;
+    const int n_ts = 15;
 
 
     /**
@@ -99,7 +99,8 @@ int main(int argc, char** argv) {
     }
 
     cout << "The pedestal map is loaded." << endl;
-
+    ofstream out_EvNumbers(Form("Data/Skim_CrossEvNumbers_%d_%d.dat", run, file));
+    
     try {
 
         while (reader.next() == true) {
@@ -121,7 +122,7 @@ int main(int argc, char** argv) {
 
             int n_hits = 0;
 
-            double tmp_threshold = 10;
+            double tmp_threshold = 11;
             bool pass_tmp_threshold = false;
 
             int strip_U = -1;
@@ -129,7 +130,9 @@ int main(int argc, char** argv) {
 
             double Max_U_ADCRel = 0; // Maxmim relative adc among U strips
             double Max_V_ADCRel = 0; // Maxmim relative adc among V strips
-
+            int ts_U = -10;
+            int ts_V = -10;
+            
             for (int i = 0; i < n_uRwellADC; i++) {
                 int sector = buRWellADC.getInt("sector", i);
                 int layer = buRWellADC.getInt("layer", i);
@@ -156,17 +159,20 @@ int main(int argc, char** argv) {
                         if (ADC_Rel > Max_U_ADCRel) {
                             Max_U_ADCRel = ADC_Rel;
                             strip_U = channel;
+                            ts_U = ts;
                         }
                     } else if (layer == 2 /* V layer */) {
                         if (ADC_Rel > Max_V_ADCRel) {
                             Max_V_ADCRel = ADC_Rel;
                             strip_V = channel;
+                            ts_V = ts;
                         }
                     }
 
 
                     if ((m_ped_mean[uniqueChan] - ADC) / m_ped_rms[uniqueChan] > tmp_threshold) {
                         pass_tmp_threshold = true;
+                        out_EvNumbers<<evNumber<<endl;
                     }
 
                 }

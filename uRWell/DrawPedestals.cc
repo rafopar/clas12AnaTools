@@ -9,18 +9,20 @@
 
 using namespace std;
 
+void DrawHybridLimits(TGraph*);
+
 /*
  * 
  */
-void DrawPedestals() {
+void DrawPedestals(int run) {
 
-    int run = 1295;
+    if (run < 0) {cout << "Run number has to be above 0. End program " << endl; exit;}
     const int n_ts = 6;
 
     TF1 *f_Gaus = new TF1("f_Gaus", "[0]*TMath::Gaus(x, [1], [2])", 1000, 3500);
     f_Gaus->SetNpx(4500);
 
-    TFile *file_in = new TFile(Form("CheckDecoding_%d.root", run), "Read");
+    TFile *file_in = new TFile(Form("CheckDecoding_%d_0.root", run), "Read");
 
     TH2D *h_ADC_chan = (TH2D*) file_in->Get("h_ADC_chan");
     TH2D * h_ADC_Chan_ts_[n_ts];
@@ -90,13 +92,14 @@ void DrawPedestals() {
     gr_RMS->SetMarkerColor(4);
     gr_RMS->GetYaxis()->SetTitleOffset(0.5);
     gr_RMS->Draw("APl");
+    DrawHybridLimits(gr_RMS);
     c1->Print(Form("Figs/ped_RMS_globalVew_%d.pdf", run));
     c1->Print(Form("Figs/ped_RMS_globalVew_%d.png", run));
     c1->Print(Form("Figs/ped_RMS_globalVew_%d.root", run));
 
 
-    gr_RMS->SetMaximum(14);
-    gr_RMS->SetMinimum(0);
+//    gr_RMS->SetMaximum(14);
+//    gr_RMS->SetMinimum(0);
     c1->Modified();
     c1->Update();
     c1->SetGridy();
@@ -134,4 +137,22 @@ void DrawPedestals() {
 
 
     return 0;
+}
+
+void DrawHybridLimits(TGraph* gr){
+    //double max = gr->GetMaximum();
+    double max = 120.;
+    //cout<<"MAXIMUM OF THE GRAPH IS "<<max<<endl;
+    TLine *line1 = new TLine();
+    line1->SetLineStyle(9);
+    line1->SetLineColor(2);
+    line1->SetLineWidth(2);
+    line1->DrawLine(64, 0., 64., max);
+    line1->DrawLine(1064, 0., 1064., max);
+    const int n_Hybrid_Side = 6;
+    const int nchHybris = 128;
+    for( int i = 0; i < n_Hybrid_Side - 1; i++ ){
+        line1->DrawLine(64 + nchHybris*i, 0, 64 + nchHybris*i, max);
+        line1->DrawLine(1064 + nchHybris*i, 0, 1064 + nchHybris*i, max);
+    }
 }

@@ -19,13 +19,13 @@ void DrawRateVsHV() {
     c1->SetRightMargin(0.02);
     c1->SetLeftMargin(0.14);
     
-    const int n_HV_Set = 3;
+    const int n_HV_Set = 4;
     const int nCutLvls = 5;
     double ADC_Thresholds[nCutLvls] = {5., 5.5, 6., 6.5, 7.};
 
-    int runs[n_HV_Set] = {1287, 1290, 1291};
-    int HVs[n_HV_Set] = {560, 570, 575};
-    int N_analyzedEvents[n_HV_Set] = {696397, 999817, 910525};
+    int runs[n_HV_Set] = {1287, 1290, 1291, 1515};
+    int HVs[n_HV_Set] = {560, 570, 575, 576};
+    int N_analyzedEvents[n_HV_Set] = {696397, 999817, 910525, 760872};
 
 
     TGraph * gr_NormalizedCounts_[nCutLvls];

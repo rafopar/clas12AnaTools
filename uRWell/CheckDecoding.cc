@@ -29,12 +29,14 @@ int main(int argc, char** argv) {
 
     char outputFile[256];
     char inputFile[256];
-
+ cout << "test if florian can modify code " << endl;
     int run = 0;
-    if (argc > 1) {
+    int fnum = -1;
+    if (argc > 2) {
         run = atoi(argv[1]);
+        fnum = atoi(argv[2]);
         //sprintf(inputFile, "%s", argv[1]);
-        sprintf(inputFile, "Data/decoded_%d.hipo", run);
+        sprintf(inputFile, "Data/decoded_%d_%d.hipo", run, fnum);
         sprintf(outputFile, "outSkim.hipo");
     } else {
         std::cout << " *** please provide a file name..." << std::endl;
@@ -58,11 +60,11 @@ int main(int argc, char** argv) {
 
     const int crateID_test3 = 40; // the fADC is on ROC 40
     const int slot_fADC = 3; // and the slot is 3
-    const int n_ts = 6;
+    const int n_ts = 15;
 
-    TFile *file_out = new TFile(Form("CheckDecoding_%d.root", run), "Recreate");
-    TH2D *h_ADC_chan = new TH2D("h_ADC_chan", "", 1711, -0.5, 1710.5, 400, 2000., 3000.);
-    TH2D *h_ADC_AllChan = new TH2D("h_ADC_AllChan", "", 1711, -0.5, 1710.5, 400, 2000., 3000.);
+    TFile *file_out = new TFile(Form("CheckDecoding_%d_%d.root", run, fnum), "Recreate");
+    TH2D *h_ADC_chan = new TH2D("h_ADC_chan", "", 1711, -0.5, 1710.5, 400, -1500., 500.);
+    TH2D *h_ADC_AllChan = new TH2D("h_ADC_AllChan", "", 1711, -0.5, 1710.5, 400, -1500., 50.);
     TH2D * h_ADC_Chan_ts_[n_ts];
 
     TH2D *h_ch_Coorelation = new TH2D("h_ch_Coorelation", "", 17, -0.5, 16.5, 17, -0.5, 16.5);
@@ -70,7 +72,7 @@ int main(int argc, char** argv) {
     TH2D *h_ADC_TopBot1 = new TH2D("h_ADC_TopBot1", "", 200, 0., 500, 200, 0., 500);
 
     for (int i = 0; i < n_ts; i++) {
-        h_ADC_Chan_ts_[i] = new TH2D(Form("h_ADC_Chan_ts_%d", i), "", 1711, -0.5, 1710.5, 400, 2000., 3000.);
+        h_ADC_Chan_ts_[i] = new TH2D(Form("h_ADC_Chan_ts_%d", i), "", 1711, -0.5, 1710.5, 400, -1500., 500.);
     }
 
 
