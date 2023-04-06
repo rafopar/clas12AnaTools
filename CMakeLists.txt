@@ -4,7 +4,7 @@ project(tools)
 # Set up
 cmake_minimum_required (VERSION 3.0)
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_CXX_FLAGS "-std=c++11")
+set(CMAKE_CXX_FLAGS "-std=c++14")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules")
 find_package(ROOT REQUIRED)
 find_package(LZ4 REQUIRED)
