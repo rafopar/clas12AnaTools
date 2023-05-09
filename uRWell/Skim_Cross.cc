@@ -21,6 +21,8 @@
 #include <vector>
 #include <utility>
 
+#include <chrono>
+
 using namespace std;
 
 /*
@@ -59,6 +61,15 @@ int main(int argc, char** argv) {
     hipo::bank bRAWADc(factory.getSchema("RAW::adc"));
     hipo::bank bRunConf(factory.getSchema("RUN::config"));
 
+    int __bank_Sec_INDEX_ = buRWellADC.getSchema().getEntryOrder("sector");
+    int __bank_Layer_INDEX_ = buRWellADC.getSchema().getEntryOrder("layer");
+    int __bank_Component_INDEX_ = buRWellADC.getSchema().getEntryOrder("component");
+    int __bank_Order_INDEX_ = buRWellADC.getSchema().getEntryOrder("order");
+    int __bank_ADC_INDEX_ = buRWellADC.getSchema().getEntryOrder("ADC");
+    int __bank_Time_INDEX_ = buRWellADC.getSchema().getEntryOrder("time");
+    int __bank_Ped_INDEX_ = buRWellADC.getSchema().getEntryOrder("ped");
+    
+    
     hipo::writer writer;
     writer.addDictionary(factory);
     writer.open(outputFile);
@@ -74,8 +85,13 @@ int main(int argc, char** argv) {
      * Reading the pedestal file and and fill a map for pedestals and RMSs
      */
 
-    std::map<int, double> m_ped_mean; // Mean value of the pedestal
-    std::map<int, double> m_ped_rms; // rms of the pedestal
+    const int nMaxUniqCh = 1705;
+
+    //    std::map<int, double> m_ped_mean; // Mean value of the pedestal
+    //    std::map<int, double> m_ped_rms; // rms of the pedestal
+
+    double m_ped_mean[nMaxUniqCh];
+    double m_ped_rms[nMaxUniqCh];
 
     //ifstream inp_ped("PedFiles/CosmicPeds.dat");
     ifstream inp_ped(Form("PedFiles/Peds_%d", run));
@@ -100,7 +116,7 @@ int main(int argc, char** argv) {
 
     cout << "The pedestal map is loaded." << endl;
     ofstream out_EvNumbers(Form("Data/Skim_CrossEvNumbers_%d_%d.dat", run, file));
-    
+
     try {
 
         while (reader.next() == true) {
@@ -132,50 +148,58 @@ int main(int argc, char** argv) {
             double Max_V_ADCRel = 0; // Maxmim relative adc among V strips
             int ts_U = -10;
             int ts_V = -10;
-            
-            for (int i = 0; i < n_uRwellADC; i++) {
-                int sector = buRWellADC.getInt("sector", i);
-                int layer = buRWellADC.getInt("layer", i);
-                int channel = buRWellADC.getInt("component", i);
-                int ADC = buRWellADC.getInt("ADC", i);
-                int uniqueChan = int(buRWellADC.getFloat("time", i));
-                int ts = buRWellADC.getInt("ped", i);
 
+
+            for (int i = 0; i < n_uRwellADC; i++) {
+                //auto start = std::chrono::high_resolution_clock::now();
+                int sector = buRWellADC.getInt(__bank_Sec_INDEX_, i);
+                //auto stop = std::chrono::high_resolution_clock::now();
+                //auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start);
+                //cout << "Duration  = " << duration.count() << endl;
+                int layer = buRWellADC.getInt(__bank_Layer_INDEX_, i);
+                int channel = buRWellADC.getInt(__bank_Component_INDEX_, i);
+                int ADC = buRWellADC.getInt(__bank_ADC_INDEX_, i);
+                int uniqueChan = int(buRWellADC.getFloat(__bank_Time_INDEX_, i));
+                int ts = buRWellADC.getInt(__bank_Ped_INDEX_, i);                
+                
                 int slot = layer;
 
-                if (sector != 6) {
-                    // Those are unphysical channels, are not connected to any strip.
-                    continue;
-                }
+                                if (sector != 6) {
+                                    // Those are unphysical channels, are not connected to any strip.   
+                                    continue;
+                                }
+                                
+                                double ADC_Rel = (m_ped_mean[uniqueChan] - ADC) / m_ped_rms[uniqueChan];
+                
+                                //if (ADC < m_ped_mean[uniqueChan] - sigm_threshold * m_ped_rms[uniqueChan]) {
+                                if (ADC_Rel > sigm_threshold) {
+                                    //cout << evNumber << "    " << uniqueChan << "     " << m_ped_mean[uniqueChan] << "    " << m_ped_rms[uniqueChan] << "     " << ADC << "    " << sector << "  ts = " << ts << endl;
+                                    n_hits = n_hits + 1;
+                
+                                    if (layer == 1 /* U layer */) {
+                                        if (ADC_Rel > Max_U_ADCRel) {
+                                            Max_U_ADCRel = ADC_Rel;
+                                            strip_U = channel;
+                                            ts_U = ts;
+                                        }
+                                    } else if (layer == 2 /* V layer */) {
+                                        if (ADC_Rel > Max_V_ADCRel) {
+                                            Max_V_ADCRel = ADC_Rel;
+                                            strip_V = channel;
+                                            ts_V = ts;
+                                        }
+                                    }
+                
+                
+                                    if ((m_ped_mean[uniqueChan] - ADC) / m_ped_rms[uniqueChan] > tmp_threshold) {
+                                        pass_tmp_threshold = true;
+                                        out_EvNumbers<<evNumber<<endl;
+                                    }
+                
+                                }
+                                
 
-                double ADC_Rel = (m_ped_mean[uniqueChan] - ADC) / m_ped_rms[uniqueChan];
 
-                //if (ADC < m_ped_mean[uniqueChan] - sigm_threshold * m_ped_rms[uniqueChan]) {
-                if (ADC_Rel > sigm_threshold) {
-                    //cout << evNumber << "    " << uniqueChan << "     " << m_ped_mean[uniqueChan] << "    " << m_ped_rms[uniqueChan] << "     " << ADC << "    " << sector << "  ts = " << ts << endl;
-                    n_hits = n_hits + 1;
-
-                    if (layer == 1 /* U layer */) {
-                        if (ADC_Rel > Max_U_ADCRel) {
-                            Max_U_ADCRel = ADC_Rel;
-                            strip_U = channel;
-                            ts_U = ts;
-                        }
-                    } else if (layer == 2 /* V layer */) {
-                        if (ADC_Rel > Max_V_ADCRel) {
-                            Max_V_ADCRel = ADC_Rel;
-                            strip_V = channel;
-                            ts_V = ts;
-                        }
-                    }
-
-
-                    if ((m_ped_mean[uniqueChan] - ADC) / m_ped_rms[uniqueChan] > tmp_threshold) {
-                        pass_tmp_threshold = true;
-                        out_EvNumbers<<evNumber<<endl;
-                    }
-
-                }
             }
 
             if (strip_U >= 0 && strip_V >= 0) {
