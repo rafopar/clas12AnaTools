@@ -5,28 +5,31 @@ using namespace std;
 void CalcDesign(){
 
   const double d2r = TMath::DegToRad();
-    
   
-  const double pitch = 1.; // mm
-  const double alpha = 65.77; // deg // Angle of the trapexoid wrt big base
+  
+  const double pitch = 1.2; // mm
+  const double alpha = 62.85; // deg // Angle of the trapexoid wrt big base
   const double beta = 10.; // deg, the stereo angle
-  const double base_top = 1463.55; // mm // The longest base, this part even might not be used
-  const double d0_NotUsed = 200.;  // Top 200 mm will not be used
-  const double tot_d0 = 1200.;
+  const double base_top = 1560.; // mm // The longest base, this part even might not be used
+  const double tot_Height = 1392.57; // mm // The total height of the trapezoid
+  const double d0_NotUsed = 45;  // Top 200 mm will not be used
+  const double tot_d0 = tot_Height - d0_NotUsed; // Is total height that will represent active area of uRwell
   const int nSegment = 3; // The number of segements
   const int nChPerBoard = 256;
+  const int nSectors = 6;
+  const int nView = 2;
+  const int nLayer = 2;
 
   double d0_[nSegment];   // Heigh of each segment
-  d0_[0] = 300.; // mm
-  d0_[1] = 500.; // mm
-  d0_[2] = tot_d0 - d0_[1] - d0_[0]; // mm
+  d0_[2] = 500; // mm
+  d0_[1] = 460 ; // mm
+  d0_[0] = tot_d0 - d0_[1] - d0_[2]; // mm
   double l0_[nSegment];   // Side length of the trapezoid for each segment
   for( int i = 0; i < nSegment; i++ ){
     l0_[i] = d0_[i]/sin(alpha*d2r);
   }
   
   double bases_[nSegment + 1];
-
 
   bases_[0] = base_top - 2*d0_NotUsed/tan(alpha*d2r);
   for( int i = 1; i < nSegment + 1; i++ ){
@@ -83,9 +86,42 @@ void CalcDesign(){
     cout<<" *** * The number of unused channels on the board    is "<<nUnusedChannels<<endl;
     cout<<endl<<endl;
 }
-  cout<<" *** * The Tot # of boards on left(right) side         is "<<tot_n_Boards<<endl;
-  cout<<" *** * The Tot # of strips on left(right) side         is "<<tot_n_Strips<<endl;
+
+  const int nAllStripsAllSectors = tot_n_Strips*nSectors*nView*nLayer;
   
+  cout<<" *** * The Tot # of boards on left(right) side                is "<<tot_n_Boards<<endl;
+  cout<<" *** * The Tot # of strips on left(right) side                is "<<tot_n_Strips<<endl;
+  cout<<" *** * The Tot # of strips for 6(Sec)X2(layers)               is "<<nAllStripsAllSectors<<endl;
+
+  TCanvas *c1 = new TCanvas("c1", "", 950, 950);
+
+  TH2D *h_tmp = new TH2D("h_tmp", "; X [mm]; Y [mm]", 200, -800., 800., 200, -1450., 150);
+  h_tmp->GetYaxis()->SetTitleOffset(1.2);
+  h_tmp->SetStats(0);
+  c1->SetTopMargin(0.02);
+  c1->SetRightMargin(0.02);
+  h_tmp->Draw("");
+
+  TLatex *lat1 = new TLatex();
+  lat1->SetTextFont(42);
+  lat1->SetTextSize(0.03);
   
-  
+  TLine *line1 = new TLine();
+  line1->SetLineWidth(2);
+  line1->SetLineColor(2);
+
+  line1->DrawLine(-0.5*base_top, 0., 0.5*base_top, 0.);
+  lat1->DrawLatex(-0.25*base_top, -0.5*d0_NotUsed, "Unused area");
+  double tmp_Y = -d0_NotUsed;
+  for( int i = 0; i < nSegment + 1; i++ ){
+    line1->DrawLine(-0.5*bases_[i], tmp_Y , 0.5*bases_[i], tmp_Y);
+    if( i < nSegment ){
+      lat1->DrawLatex(-0.25*bases_[i], tmp_Y - 0.5*d0_[i], Form("Segment %d", i));
+    }
+
+    tmp_Y = tmp_Y - d0_[i];
+  }
+  double Y_Bottom = tmp_Y;
+  line1->DrawLine(-0.5*base_top, 0., -0.5*bases_[nSegment], Y_Bottom);
+  line1->DrawLine(0.5*base_top, 0., 0.5*bases_[nSegment], Y_Bottom);
 }
