@@ -93,9 +93,9 @@ int main(int argc, char** argv) {
     int __bank_Time_INDEX_ = buRWellADC.getSchema().getEntryOrder("time");
     int __bank_Ped_INDEX_ = buRWellADC.getSchema().getEntryOrder("ped");
 
-    const double sigm_threshold = 5.; // Represents the threshold of the ADC in units of the sigma.
-    const double sigm_thresholduRwell = 5.; // Represents the threshold of the ADC in units of the sigma.
-    const double sigm_thresholduRwellMAX = 100.; // This is  to cu noisy channels, that produce 
+    const double sigm_threshold = 3.; // Represents the threshold of the ADC in units of the sigma.
+    const double sigm_thresholduRwell = 3.; // Represents the threshold of the ADC in units of the sigma.
+    const double sigm_thresholduRwellMAX = 100.; // This is to cut noisy channels, that produce 
 
 
     const int nGEMChannels = 256;
@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
 
             evCounter = evCounter + 1;
 
-            if( evCounter > 200 ){break;}
+            //if( evCounter > 200 ){break;}
             if (evCounter % 1000 == 0) {
                 cout.flush() << "Processed " << evCounter << " events \r";
             }
