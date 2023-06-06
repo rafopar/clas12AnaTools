@@ -1,5 +1,6 @@
 #include <uRwellTools.h>
 #include <algorithm>
+#include <iostream>
 
 using namespace std;
 
@@ -44,10 +45,10 @@ namespace uRwellTools {
         fEnergy = 0;
     }
 
-    void uRwellCluster::setStrips( std::vector<int> astrips ){
-        fv_strips = astrips;
+    void uRwellCluster::setHits(std::vector<uRwellHit> aHits) {
+        fv_Hits = aHits;
     }
-    
+
     std::vector<uRwellCluster> getGlusters(std::vector<uRwellHit> v_Hits) {
         //
         // Let's 1st sort the vector of strips
@@ -57,34 +58,47 @@ namespace uRwellTools {
             return lhs.strip < rhs.strip;
         });
 
-        
+
         double clEnergy = 0;
         bool newCluster = true;
         int prev_Strip = -10000; // Some number that clearly is not a real strip number
-        vector<int> v_strips;
+        //        vector<int> v_strips;
+        vector<uRwellHit> v_ClHits;
+
         for (int i = 0; i < v_Hits.size(); i++) {
 
             int curStrip = v_Hits.at(i).strip;
             double curHitEnergy = v_Hits.at(i).adc;
 
-            if (v_Hits.at(i).strip - curStrip <= 2) {
+            //cout << "v_Hits.at(i).strip = " << v_Hits.at(i).strip << "    curStrip =  " << curStrip << endl;
+            if (curStrip - prev_Strip <= 3 || i == 0) {
                 clEnergy = clEnergy + curHitEnergy;
-                v_strips.push_back(curStrip);
-            } else {                
+                v_ClHits.push_back(v_Hits.at(i));
+
+                if (i == v_Hits.size() - 1) {
+                    uRwellTools::uRwellCluster curCluster;
+                    curCluster.setEnergy(clEnergy);
+                    curCluster.setHits(v_ClHits);
+                    v_Clusters.push_back(curCluster);
+                }
+
+            } else {
                 uRwellTools::uRwellCluster curCluster;
                 curCluster.setEnergy(clEnergy);
-                curCluster.setStrips(v_strips);
+                curCluster.setHits(v_ClHits);
+
                 v_Clusters.push_back(curCluster);
-                
-                clEnergy = 0.;
-                v_strips.clear();
-                v_strips.shrink_to_fit();
-                
+
+                v_ClHits.clear();
+                v_ClHits.shrink_to_fit();
+
                 clEnergy = curHitEnergy;
-                v_strips.push_back(curStrip);
+                v_ClHits.push_back(v_Hits.at(i));
             }
+            prev_Strip = curStrip;
         }
-        
+
+        //cout<<"The size of the cluster is "<<v_Clusters.size()<<endl;
         return v_Clusters;
     }
 }

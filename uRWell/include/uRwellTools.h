@@ -34,15 +34,18 @@ namespace uRwellTools {
             fEnergy = aEnergy;
         }
         
-        void setStrips(std::vector<int>);
+        void setHits(std::vector<uRwellHit>);
+        std::vector<uRwellHit>* getHits(){
+            return &fv_Hits;
+        }
         void setNStrips(int aNStrips){
-            fnStrips = fv_strips.size();
+            fnStrips = fv_Hits.size();
         }
 
     private:
         int fnStrips;
         double fEnergy;
-        std::vector<int> fv_strips;
+        std::vector<uRwellHit> fv_Hits;
 
 
     };
