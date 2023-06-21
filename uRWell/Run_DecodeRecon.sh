@@ -40,7 +40,9 @@ echo "Running Skim_Cross"
 echo " "
 echo " "
 echo " ********************************"
-echo "Running Event Selection from EVIO"
+echo "Running ./SkimZeroSuppression.exe"
+./SkimZeroSuppression.exe $1 $2
+
 #./AnalyzeData.exe $1 $2
 #AnalyzeDataWithGEM.exe $1 $2
 
