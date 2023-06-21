@@ -49,6 +49,35 @@ namespace uRwellTools {
         fv_Hits = aHits;
     }
 
+    void uRwellCluster::findPeakEnergy() {
+
+        double MaxADC = 0;
+
+        for (auto curHit : fv_Hits) {
+            MaxADC = MaxADC > curHit.adc ? MaxADC : curHit.adc;
+        }
+
+        fPeakADC = MaxADC;
+    }
+
+    void uRwellCluster::findAvgStrip() {
+
+        double WeightedSum = 0;
+        double ADCSum = 0;
+
+        for (auto curHit : fv_Hits) {
+            WeightedSum = WeightedSum + curHit.adc * curHit.strip;
+            ADCSum = ADCSum + curHit.adc;
+        }
+
+        fAvgStrip = WeightedSum / ADCSum;
+    }
+
+    void uRwellCluster::FinalizeCluster() {
+        findPeakEnergy();
+        findAvgStrip();
+    }
+
     std::vector<uRwellCluster> getGlusters(std::vector<uRwellHit> v_Hits) {
         //
         // Let's 1st sort the vector of strips
@@ -71,7 +100,7 @@ namespace uRwellTools {
             double curHitEnergy = v_Hits.at(i).adc;
 
             //cout << "v_Hits.at(i).strip = " << v_Hits.at(i).strip << "    curStrip =  " << curStrip << endl;
-            if (curStrip - prev_Strip <= 3 || i == 0) {
+            if ( (curStrip - prev_Strip <= (clStripGap + 1)) || i == 0) {
                 clEnergy = clEnergy + curHitEnergy;
                 v_ClHits.push_back(v_Hits.at(i));
 
@@ -79,6 +108,7 @@ namespace uRwellTools {
                     uRwellTools::uRwellCluster curCluster;
                     curCluster.setEnergy(clEnergy);
                     curCluster.setHits(v_ClHits);
+                    curCluster.FinalizeCluster();
                     v_Clusters.push_back(curCluster);
                 }
 
@@ -86,7 +116,7 @@ namespace uRwellTools {
                 uRwellTools::uRwellCluster curCluster;
                 curCluster.setEnergy(clEnergy);
                 curCluster.setHits(v_ClHits);
-
+                curCluster.FinalizeCluster();
                 v_Clusters.push_back(curCluster);
 
                 v_ClHits.clear();
@@ -101,4 +131,14 @@ namespace uRwellTools {
         //cout<<"The size of the cluster is "<<v_Clusters.size()<<endl;
         return v_Clusters;
     }
+
+    double getCrossX(double strip_U, double strip_V) {
+        return pitch * (strip_U - strip_V) / (2 * sin(strip_alpha));
+    }
+
+    double getCrossY(double strip_U, double strip_V) {
+        double crs_x = getCrossX(strip_U, strip_V);
+        return tan(strip_alpha) * crs_x + Y_0 - (strip_U * pitch) / cos(strip_alpha);
+    }
+
 }
