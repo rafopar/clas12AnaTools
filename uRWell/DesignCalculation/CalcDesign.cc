@@ -8,11 +8,11 @@ void CalcDesign(){
   
   
   const double pitch = 1.2; // mm
-  const double alpha = 62.85; // deg // Angle of the trapexoid wrt big base
+  const double alpha = 62.85; // deg // Angle of the trapezoid wrt big base
   const double beta = 10.; // deg, the stereo angle
   const double base_top = 1560.; // mm // The longest base, this part even might not be used
   const double tot_Height = 1392.57; // mm // The total height of the trapezoid
-  const double d0_NotUsed = 45;  // Top 200 mm will not be used
+  const double d0_NotUsed = 45;  // Top d0_NotUsed mm will not be used
   const double tot_d0 = tot_Height - d0_NotUsed; // Is total height that will represent active area of uRwell
   const int nSegment = 3; // The number of segements
   const int nChPerBoard = 256;
@@ -20,7 +20,7 @@ void CalcDesign(){
   const int nView = 2;
   const int nLayer = 2;
 
-  double d0_[nSegment];   // Heigh of each segment
+  double d0_[nSegment];   // Height of each segment
   d0_[2] = 500; // mm
   d0_[1] = 460 ; // mm
   d0_[0] = tot_d0 - d0_[1] - d0_[2]; // mm
