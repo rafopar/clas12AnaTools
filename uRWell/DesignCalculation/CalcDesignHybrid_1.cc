@@ -18,10 +18,12 @@ void CalcDesignHybrid_1() {
     const int nSectors = 6;
     const int nView = 2;
     const int nLayer = 2;
+    const int n_Ch_InASIC = 64;
+    const int n_ASIC_InBoard = nChPerBoard / n_Ch_InASIC;
 
     double d0_[nSegment]; // Height of each segment
-    d0_[2] = 540.; // mm
-    d0_[1] = 312.47; // mm
+    d0_[2] = 312.47; // mm
+    d0_[1] = 540.; // mm
     d0_[0] = tot_d0 - d0_[1] - d0_[2]; // mm
     double l0_[nSegment]; // Side length of the trapezoid for each segment
     for (int i = 0; i < nSegment; i++) {
@@ -34,7 +36,7 @@ void CalcDesignHybrid_1() {
     // * 1 : Strips are oriented with +/- 10 degree stereo angle.    
     int StripOrientation[nSegment];
     StripOrientation[0] = 0; //  In Seg 0 strips are parallel to sides
-    StripOrientation[1] = 1; //  In Seg 1 strips have +/- 10 degree stereo angles
+    StripOrientation[1] = 0; //  In Seg 1 strips have +/- 10 degree stereo angles
     StripOrientation[2] = 1; //  In Seg 2 strips have +/- 10 degree stereo angles
 
     std::map<int, std::string> m_StripOrientName;
@@ -44,7 +46,7 @@ void CalcDesignHybrid_1() {
 
 
     // In this model different segments can have different pitch sizes
-    const double pitch[nSegment] = {1., 1., 0.8};
+    const double pitch[nSegment] = {1., 0.9, 0.75};
 
     double bases_[nSegment + 1];
 
@@ -89,23 +91,34 @@ void CalcDesignHybrid_1() {
             double pitch_base = pitch[i] / sin(alpha * d2r);
             n_MaxCh_PerView = bases_[i] / pitch_base;
 
-            int nBoards = i == 0 ? (2 * n_MaxCh_PerView) / nChPerBoard + 1 : n_MaxCh_PerView / nChPerBoard + 1;
-            int nChannesLeft = i == 0 ? (2 * n_MaxCh_PerView) % nBoards : n_MaxCh_PerView % nBoards;
-            nBoards = nChannesLeft == 0 ? nBoards - 1 : nBoards;
-            int nUnusedChannels = i == 0 ? nBoards * nChPerBoard - 2 * n_MaxCh_PerView : nBoards * nChPerBoard - n_MaxCh_PerView;
+            int n_ASIC_inView;
+            int n_BoardView;
+            int nUnusedChannelsView;
 
             cout << " *** * Number of U(V) channels                        : " << n_MaxCh_PerView << endl;
-            if (i == 0) {
-                cout << " *** * Number of boards on the base                   : " << nBoards << endl;
-            }else{
-                cout << " *** * Number of boards on the left(right) side       : " << nBoards << endl;
+            if (i == 0) { // Top segment, i.e. segment 0
+                n_ASIC_inView = n_MaxCh_PerView / n_Ch_InASIC + 1; // Number of ASICs for U(V) strip readout.
+                int n_unusedChInASIC = n_MaxCh_PerView % n_Ch_InASIC; // Number of unused 
+                n_ASIC_inView = n_unusedChInASIC == 0 ? n_ASIC_inView - 1 : n_ASIC_inView;
+                n_BoardView = n_ASIC_inView / n_ASIC_InBoard + 1; // The number of boards needed to readout U(V) strips
+                int nUnused_ASICsView = n_ASIC_inView % n_ASIC_InBoard; // The number of Unused ASICs for the given view
+                n_BoardView = nUnused_ASICsView == 0 ? n_BoardView - 1 : n_BoardView;
+                nUnusedChannelsView = n_BoardView * nChPerBoard - n_MaxCh_PerView;
+                tot_n_Boards_Base = tot_n_Boards_Base + 2*n_BoardView;
+                cout << " *** * Number of U(V) boards on the base              : " << n_BoardView << endl;
+                cout << " *** * Number of U+V boards on the base               : " << 2*n_BoardView << endl;
+                cout << " *** * Number of unused channels on the U(V) board    : " << nUnusedChannelsView << endl;
+            } else{
+                n_BoardView = n_MaxCh_PerView / nChPerBoard + 1;
+                int nChannesLeft = n_MaxCh_PerView % n_BoardView;
+                n_BoardView = nChannesLeft == 0 ? n_BoardView - 1 : n_BoardView;
+                tot_n_Boards_Side = tot_n_Boards_Side + n_BoardView;
+                cout << " *** * Number of boards on the left(right) side       : " << n_BoardView << endl;
+                cout << " *** * Number of unused channels on the U(V) board    : " << nChannesLeft << endl;
             }
-            cout << " *** * Number of unused channels on the U(V) board    : " << nUnusedChannels << endl;
+
             cout << endl << endl;
 
-
-            tot_n_Boards_Base = i == 0 ? tot_n_Boards_Base + nBoards : tot_n_Boards_Base;
-            tot_n_Boards_Side = i == 0 ? tot_n_Boards_Side : tot_n_Boards_Side + nBoards;
             tot_n_Strips = tot_n_Strips + n_MaxCh_PerView;
         } else if (StripOrientation[i] == 1) {
             double pitch_side = pitch[i] / sin((alpha + beta) * d2r);
@@ -114,18 +127,28 @@ void CalcDesignHybrid_1() {
             int n_MaxCh_PerSide = n_MaxCh_PerView; // Those numbers should be equal actually
             int n_MaxCh_OtherView = n_MaxCh_PerSide - n_MaxCh_PerSidePerView;
 
-            int nBoards = n_MaxCh_PerSide / nChPerBoard + 1;
-            int nChannesLeft = n_MaxCh_PerSide % nChPerBoard;
-            nBoards = nChannesLeft == 0 ? nBoards - 1 : nBoards;
-            int nUnusedChannels = nBoards * nChPerBoard - n_MaxCh_PerSide;
+            int n_View_ASICs = n_MaxCh_PerSidePerView / n_Ch_InASIC; // Number of ASICS to be used to RO U(V) channels from the left(right) side.
+            int n_ViewCh_RO_ThisSide = n_View_ASICs*n_Ch_InASIC; // Number of U(V) channels to be RO from the left(right) side
+            int n_ViewCh_BothSide = n_MaxCh_PerSidePerView - n_ViewCh_RO_ThisSide; // Number of U(V) channels that touches both sides, but will be read on right(left) side.
+            int n_ViewCh_RO_OtherSide = n_ViewCh_BothSide + n_MaxCh_OtherView; // Number of U(V) channels RO in right(left) side
+
+            int n_OtherView_ASICs = n_ViewCh_RO_OtherSide / n_Ch_InASIC + 1; // The number of ASICs to RO V(U) channels from the left(right) side.
+            int n_ASICS = n_View_ASICs + n_OtherView_ASICs;
+            int nBoards = n_ASICS / n_ASIC_InBoard + 1;
+            int nUnusedASIC = n_ASICS % n_ASIC_InBoard;
+            nBoards = nUnusedASIC == 0 ? nBoards - 1 : nBoards;
+
+            int nUnusedChannels = nBoards * nChPerBoard - n_ViewCh_RO_ThisSide - n_MaxCh_OtherView - n_ViewCh_BothSide; // The nu
+            n_OtherView_ASICs = nUnusedChannels == 0 ? n_OtherView_ASICs - 1 : n_OtherView_ASICs;
 
             tot_n_Boards_Side = tot_n_Boards_Side + nBoards;
-
             tot_n_Strips = tot_n_Strips + n_MaxCh_PerView;
-            
+
             cout << " *** * The Tot # of channels on left(right) side      : " << n_MaxCh_PerSide << endl;
             cout << " *** * The # of U(V) channels in left(right) side     : " << n_MaxCh_PerSidePerView << endl;
             cout << " *** * The # of V(U) channels in left(right) side     : " << n_MaxCh_OtherView << endl;
+            cout << " *** * The # of U(V) channels RO in left(right) side  : " << n_ViewCh_RO_ThisSide << setw(10) << n_View_ASICs << " ASICs" << endl;
+            cout << " *** * The # of V(U) channels RO in left(right) side  : " << n_ViewCh_RO_OtherSide << setw(10) << n_OtherView_ASICs << " ASICs" << endl;
             cout << " *** * The number of boards in left(right) side       : " << nBoards << endl;
             cout << " *** * The number of unused channels on the board     : " << nUnusedChannels << endl;
             cout << endl << endl;
@@ -140,8 +163,8 @@ void CalcDesignHybrid_1() {
     }
 
     const int nAllStripsAllSectors = tot_n_Strips * nSectors * nView*nLayer;
-    tot_n_Boards = tot_n_Boards_Base + 2*tot_n_Boards_Side;
-    
+    tot_n_Boards = tot_n_Boards_Base + 2 * tot_n_Boards_Side;
+
     cout << " ****     =============================================      **** " << endl;
     cout << " *** * Number of boards for one detector              : " << tot_n_Boards << endl;
     cout << " *** * Number of boards on the base                   : " << tot_n_Boards_Base << endl;
