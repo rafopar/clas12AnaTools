@@ -35,9 +35,9 @@ void CalcDesignHybrid_1() {
     // * 0 : Strips are parallel to sides of trapezoid, or in other words the stereo angle = the base angle of the trapezoid
     // * 1 : Strips are oriented with +/- 10 degree stereo angle.    
     int StripOrientation[nSegment];
-    StripOrientation[0] = 0; //  In Seg 0 strips are parallel to sides
-    StripOrientation[1] = 0; //  In Seg 1 strips have +/- 10 degree stereo angles
-    StripOrientation[2] = 1; //  In Seg 2 strips have +/- 10 degree stereo angles
+    StripOrientation[0] = 0; //  0=Seg 0 strips are parallel to sides, 1 = strips have +/- 10 degree stereo angles
+    StripOrientation[1] = 0; //  0=Seg 0 strips are parallel to sides, 1 = strips have +/- 10 degree stereo angles
+    StripOrientation[2] = 1; //  0=Seg 0 strips are parallel to sides, 1 = strips have +/- 10 degree stereo angles
 
     std::map<int, std::string> m_StripOrientName;
     m_StripOrientName[0] = "Parallel to sides";
@@ -98,19 +98,24 @@ void CalcDesignHybrid_1() {
             cout << " *** * Number of U(V) channels                        : " << n_MaxCh_PerView << endl;
             if (i == 0) { // Top segment, i.e. segment 0
                 n_ASIC_inView = n_MaxCh_PerView / n_Ch_InASIC + 1; // Number of ASICs for U(V) strip readout.
-                int n_unusedChInASIC = n_MaxCh_PerView % n_Ch_InASIC; // Number of unused 
-                n_ASIC_inView = n_unusedChInASIC == 0 ? n_ASIC_inView - 1 : n_ASIC_inView;
-                n_BoardView = n_ASIC_inView / n_ASIC_InBoard + 1; // The number of boards needed to readout U(V) strips
-                int nUnused_ASICsView = n_ASIC_inView % n_ASIC_InBoard; // The number of Unused ASICs for the given view
-                n_BoardView = nUnused_ASICsView == 0 ? n_BoardView - 1 : n_BoardView;
-                nUnusedChannelsView = n_BoardView * nChPerBoard - n_MaxCh_PerView;
-                tot_n_Boards_Base = tot_n_Boards_Base + 2*n_BoardView;
-                cout << " *** * Number of U(V) boards on the base              : " << n_BoardView << endl;
-                cout << " *** * Number of U+V boards on the base               : " << 2*n_BoardView << endl;
-                cout << " *** * Number of unused channels on the U(V) board    : " << nUnusedChannelsView << endl;
+                int n_unusedChInASIC = n_ASIC_inView*n_Ch_InASIC - n_MaxCh_PerView; // Number of unused channels in the U(V) ASIC
+                n_unusedChInASIC = n_unusedChInASIC == n_Ch_InASIC ? 0 : n_unusedChInASIC;
+                n_ASIC_inView = n_unusedChInASIC == 0? n_ASIC_inView - 1 : n_ASIC_inView;
+                
+                int nBoards = (2*n_ASIC_inView/n_ASIC_InBoard) + 1;
+                int nUnusedAsics = nBoards*n_ASIC_InBoard - 2*n_ASIC_inView;
+                nUnusedAsics = nUnusedAsics == n_ASIC_InBoard ? 0 : n_ASIC_InBoard;
+                nBoards = nUnusedAsics == 0 ? nBoards - 1 : nBoards;
+                
+                tot_n_Boards_Base = tot_n_Boards_Base + nBoards;
+                cout << " *** * Number of U(V) ASICS on the base               : " << n_ASIC_inView << endl;
+                cout << " *** * Number of unused U(V) channels in the ASIC     : " << n_unusedChInASIC << endl;
+                cout << " *** * Number of boards on top for U+V                : " << nBoards << endl;
+                cout << " *** * Number of unused ASICs the Top                 : " << nUnusedAsics << endl;
             } else{
                 n_BoardView = n_MaxCh_PerView / nChPerBoard + 1;
-                int nChannesLeft = n_MaxCh_PerView % n_BoardView;
+                int nChannesLeft = n_BoardView*nChPerBoard - n_MaxCh_PerView;
+                nChannesLeft = nChannesLeft == nChPerBoard ? 0 : nChannesLeft;
                 n_BoardView = nChannesLeft == 0 ? n_BoardView - 1 : n_BoardView;
                 tot_n_Boards_Side = tot_n_Boards_Side + n_BoardView;
                 cout << " *** * Number of boards on the left(right) side       : " << n_BoardView << endl;
