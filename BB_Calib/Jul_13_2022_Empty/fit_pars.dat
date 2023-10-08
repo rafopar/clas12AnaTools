@@ -1,0 +1,50 @@
+  ============ SLM Offset and Slope ========== 
+SLM_Offset = 0.00811805   -/+     0.00715666
+SLM_Slope  =  -0.00060745   -/+     0.000789025
+
+
+  ============ 2C21 Offset and Slope ========== 
+2c21_Offset = 0.0124115   -/+     0.0225131
+2c21_Slope  = 1.03551   -/+     0.00239794
+
+
+  ============ 2C21 Scale (1D histogram with Gaussian fit ) ========== 
+2c21 Scale = 1.03945   -/+     0.00023308
+2c21 Sigma = 0.00353867   -/+     0.000190359
+
+
+  ============ 2C24 Offset and Slope ========== 
+2c24_Offset = 0.0233778   -/+     0.0129743
+2c24_Slope  = 1.00024   -/+     0.00139496
+
+
+  ============ 2C24 Scale (1D histogram with Gaussian fit ) ========== 
+2c24 Scale = 1.0045   -/+     0.000232487
+2c24 Sigma = 0.00357566   -/+     0.000183171
+
+
+  ======================================================================== 
+  ============================= Beam Belocker in ========================= 
+  ======================================================================== 
+
+
+  ============ FCup offset and slop wrt 2c21: Linear fit ========== 
+FCup_Offset with 2c21 = 0.00658062   -/+     0.00887822
+FCup_Slope with 2c21  = 0.108433   -/+     0.000786295
+
+
+  ============ FCup Attenuation wrt 2c21 (1D histogram with Gaussian fit ) ========== 
+FCup Attenuation wrt 2C21 corrected = 9.15785   -/+     0.0030195
+Sigma FCup Att. wrt 2C21 corrected  = -0.0479002   -/+     0.00285676
+
+
+  ============ FCup offset and slop wrt 2c24: Linear fit ========== 
+FCup_Offset with 2c24 = 0.0106746   -/+     0.00994839
+FCup_Slope with 2c24  = 0.108157   -/+     0.000881102
+
+
+  ============ FCup Attenuation wrt 2c24 (1D histogram with Gaussian fit ) ========== 
+FCup Attenuation wrt 2C24 corrected = 9.14371   -/+     0.00336994
+Sigma FCup Att. wrt 2C24 corrected  = 0.0506215   -/+     0.00250788
+
+
