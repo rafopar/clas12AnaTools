@@ -128,20 +128,20 @@ int main(int argc, char** argv) {
     tr1->Branch("InterNuclID", &InterNuclID, "InterNuclID/I");
     tr1->Branch("ProcessID", &ProcessID, "ProcessID/I");
     tr1->Branch("EvWeight", &EvWeight, "EvWeight/D");
-    tr1->Branch("index", &index, "index[nPart]/I");
-    tr1->Branch("t_live", &t_live, "t_live[nPart]/D");
-    tr1->Branch("type", &type, "type[nPart]/I");
-    tr1->Branch("pid", &pid, "pid[nPart]/I");
-    tr1->Branch("parentInd", &parentInd, "parentInd[nPart]/I");
-    tr1->Branch("daughtInd", &daughtInd, "daughtInd[nPart]/I");
-    tr1->Branch("px", &px, "px[nPart]/D");
-    tr1->Branch("py", &py, "py[nPart]/D");
-    tr1->Branch("pz", &pz, "pz[nPart]/D");
-    tr1->Branch("E", &E, "E[nPart]/D");
-    tr1->Branch("m", &m, "m[nPart]/D");
-    tr1->Branch("vx", &vx, "vx[nPart]/D");
-    tr1->Branch("vy", &vy, "vy[nPart]/D");
-    tr1->Branch("vz", &vz, "vz[nPart]/D");
+    tr1->Branch("index", index, "index[nPart]/I");
+    tr1->Branch("t_live", t_live, "t_live[nPart]/D");
+    tr1->Branch("type", type, "type[nPart]/I");
+    tr1->Branch("pid", pid, "pid[nPart]/I");
+    tr1->Branch("parentInd", parentInd, "parentInd[nPart]/I");
+    tr1->Branch("daughtInd", daughtInd, "daughtInd[nPart]/I");
+    tr1->Branch("px", px, "px[nPart]/D");
+    tr1->Branch("py", py, "py[nPart]/D");
+    tr1->Branch("pz", pz, "pz[nPart]/D");
+    tr1->Branch("E", E, "E[nPart]/D");
+    tr1->Branch("m", m, "m[nPart]/D");
+    tr1->Branch("vx", vx, "vx[nPart]/D");
+    tr1->Branch("vy", vy, "vy[nPart]/D");
+    tr1->Branch("vz", vz, "vz[nPart]/D");
 
     for (auto curfName : v_fInpNames) {
 
