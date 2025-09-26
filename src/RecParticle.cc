@@ -10,8 +10,8 @@
 #include <TMath.h>
 
 RecParticle::RecParticle(hipo::bank &bRecPart, hipo::bank &bRecCalo, hipo::bank &bRecCherenkov, int pind, int ind_PCal, int ind_ECin, int ind_ECout, int ind_HTCC) {
-
-    fpid = bRecPart.getInt("pid", pind);
+    
+    fpid = bRecPart.getInt("pid", pind);    
     fpx = double( bRecPart.getFloat("px", pind));
     fpy = double( bRecPart.getFloat("py", pind));
     fpz = double( bRecPart.getFloat("pz", pind));
