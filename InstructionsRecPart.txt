@@ -1,0 +1,15 @@
+Read hipo DST file
+
+Make class, e.g. named RecParticle
+It's attributes should be assigned values by reading REC::Particle and various "REC::Response" banks from the hipo file.
+In the "REC::Response" the "Responce" can have different names like Cherenkov->"REC::Cherenkov".
+Basic attributes of of the RecParticle are defined in REC::Particle, e.g. pid, px, py etc.
+And relationship between the REC::Responce and REC::Particle is such that the variable "pindex" (an integer) in the
+REC::Responce bank indicates the row number in the REC::Particle bank. For instance, if pindex 2 (takes non negative integer values including 0),
+than that means in the given row of REC::Responce bank all variables are related to the third row of the REC::Particle bank.
+Description of those banks are given int the link https://clasweb.jlab.org/wiki/index.php/CLAS12_DSTs
+Later I can give more preciese relationship between variables, but before that I want to check if you can
+develop a class that can read a hipo file and for each event produce the list of Recparticles,
+Each RecParticle should have getter methods to access all attributes defined in the REC::Particle and REC::responce banks.
+It also should calculate some other variables, e.g. momenum of the particle, e.g. p = sqrt(px**2 + py**2 + pz**2).
+An example hipo file is /cache/clas12/rg-k/production/recon/spring2024/pass1/8477MeV/dst/train/skim4/skim4_019788.hipo

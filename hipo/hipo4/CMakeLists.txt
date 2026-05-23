@@ -9,5 +9,6 @@ add_library(Hipo4
 		bank.cpp dictionary.cpp reader.cpp record.cpp recordbuilder.cpp utils.cpp wrapper.cpp writer.cpp event.cpp )
 
 target_link_libraries(Hipo4 ${LZ4_LIBRARY} )
-install(TARGETS Hipo4 LIBRARY ARCHIVE DESTINATION  ${CMAKE_SOURCE_DIR}/lib  )
+#install(TARGETS Hipo4 LIBRARY ARCHIVE DESTINATION  ${CMAKE_SOURCE_DIR}/lib  )
+install(TARGETS Hipo4 LIBRARY ARCHIVE DESTINATION  ${CMAKE_INSTALL_PREFIX}/lib )
 

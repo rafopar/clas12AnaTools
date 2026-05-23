@@ -1,0 +1,35 @@
+# Build directories and artifacts
+build/
+bin/
+lib/
+
+# Compiled objects and binaries
+*.o
+*.exe
+*.so
+*.a
+*.dylib
+
+# ROOT generated dictionary files
+G__*.cxx
+G__*.h
+dict*.cc
+*_rdict.pcm
+
+# ROOT data files
+*.root
+
+# IDE project files
+.idea/
+nbproject/
+
+# Backup files
+*.cc_bak
+*.bak
+
+# pkg-config generated
+*.pc
+
+# Compilation database
+compile_commands.dat
+compile_commands.json
